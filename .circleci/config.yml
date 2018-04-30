@@ -25,7 +25,7 @@ jobs:
     steps:
       - run:
           name: Build docker image
-          command: build . -t nyulibraries/kubefigs:${CIRCLE_BRANCH//\//_}
+          command: docker build . -t nyulibraries/kubefigs:${CIRCLE_BRANCH//\//_}
       - run:
           name: Authenticate with dockerhub
           command: docker login -u "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
@@ -44,7 +44,7 @@ jobs:
 
 workflows:
   version: 2
-  build-test-and-deploy:
+  build-test-and-push:
     jobs:
       - test
       - push:
