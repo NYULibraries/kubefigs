@@ -1,0 +1,7 @@
+FROM ruby:2.4.1
+
+COPY Gemfile Gemfile.lock ./
+RUN gem install bundler && bundle install
+
+COPY . .
+CMD bundle exec rspec

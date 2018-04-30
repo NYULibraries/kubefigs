@@ -1,0 +1,9 @@
+version: "2"
+services:
+  app:
+    build: .
+    image: nyulibraries/kubefigs
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
