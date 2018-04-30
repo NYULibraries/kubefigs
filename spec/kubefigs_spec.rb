@@ -75,8 +75,8 @@ RSpec.describe "./kubefigs.rb" do
       it "should interpolate variables" do
         expect(cats_config1['config']['default_pet']).to eq "tigger"
         expect(cats_config1['config']['my_pets']).to match_array %w[tigger kitty]
-        expect(dogs_config1['config']['default_pet']).to eq "tucker"
-        expect(dogs_config1['config']['my_pets']).to match_array %w[tucker maggie]
+        expect(dogs_config1['config']['default_pet']).to eq "maggie"
+        expect(dogs_config1['config']['my_pets']).to match_array ["maggie", nil]
       end
 
       it "should only add specified file" do
