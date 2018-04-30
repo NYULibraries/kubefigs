@@ -23,6 +23,7 @@ jobs:
   push:
     <<: *docker-defaults
     steps:
+      - setup_remote_docker
       - run:
           name: Build docker image
           command: docker build . -t nyulibraries/kubefigs:${CIRCLE_BRANCH//\//_}
@@ -35,6 +36,7 @@ jobs:
   push_latest:
     <<: *docker-defaults
     steps:
+      - setup_remote_docker
       - run:
           name: Tag docker image
           command: docker tag nyulibraries/kubefigs:master nyulibraries/kubefigs
