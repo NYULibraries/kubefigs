@@ -63,5 +63,26 @@ RSpec.describe "./kubefigs.rb" do
         expect(Dir[File.join(dogs_dir, '*')]).to match_array [dogs_config1_path]
       end
     end
+
+    context "when supplied a filename nad variables path" do
+      before { kubefigs(File.join(fixtures_dir, "config1.yml.tpl"), File.join(fixtures_dir, "alt_variables.yml")) }
+
+      it "should create two directories" do
+        expect(File.directory?(cats_dir)).to eq true
+        expect(File.directory?(dogs_dir)).to eq true
+      end
+
+      it "should interpolate variables" do
+        expect(cats_config1['config']['default_pet']).to eq "tigger"
+        expect(cats_config1['config']['my_pets']).to match_array %w[tigger kitty]
+        expect(dogs_config1['config']['default_pet']).to eq "tucker"
+        expect(dogs_config1['config']['my_pets']).to match_array %w[tucker maggie]
+      end
+
+      it "should only add specified file" do
+        expect(Dir[File.join(cats_dir, '*')]).to match_array [cats_config1_path]
+        expect(Dir[File.join(dogs_dir, '*')]).to match_array [dogs_config1_path]
+      end
+    end
   end
 end
