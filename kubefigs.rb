@@ -22,7 +22,7 @@ def get_template_paths
   raise "File or directory '#{source_path}' does not exist" unless File.exist?(get_source_path)
 
   if File.file?(get_source_path)
-    [source_path]
+    [get_source_path]
   else
     template_paths = Dir[File.join(get_source_path, "*.tpl")]
     raise "Directory '#{source_path}' has no template files (*.tpl)" if template_paths.empty?
@@ -74,7 +74,7 @@ def inject_variables(template, vars_hash)
   end
 end
 
-def subtitute_yaml(source_path, variables_path)
+def kubefigs(source_path, variables_path=nil, verbose: false)
   set_source_path(source_path)
   set_variables_path(variables_path)
 
@@ -87,12 +87,12 @@ def subtitute_yaml(source_path, variables_path)
 
       File.open(output_path, 'w'){|f| f.write(output) }
 
-      puts "Wrote: #{output_path}"
+      puts "Wrote: #{output_path}" if verbose
     end
   end
 end
 
 if $0 == __FILE__
   raise "Usage: #{$0} <file_or_directory_path>" unless ARGV[0]
-  subtitute_yaml(ARGV[0], ARGV[1])
+  kubefigs(ARGV[0], ARGV[1], verbose: true)
 end
