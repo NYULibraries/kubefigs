@@ -4,13 +4,11 @@ docker-defaults: &docker-defaults
   working_directory: ~/app
 
 dc-setup: &dc-setup
-  - checkout
-  - setup_remote_docker
-  - run:
-      name: Install dependencies
-      command: |
-        apk add --no-cache python3
-        pip3 install docker-compose==1.16.1
+  run:
+    name: Install dependencies
+    command: |
+      apk add --no-cache python3
+      pip3 install docker-compose==1.16.1
 
 test: &test
   run:
@@ -22,7 +20,9 @@ jobs:
   test_and_push:
     <<: *docker-defaults
     steps:
-      <<: *dc-setup
+      - checkout
+      - setup_remote_docker
+      - <<: *dc-setup
       - <<: *test
       - run:
           name: Build docker image
@@ -36,7 +36,9 @@ jobs:
   test_and_push_latest:
     <<: *docker-defaults
     steps:
-      <<: *dc-setup
+      - checkout
+      - setup_remote_docker
+      - <<: *dc-setup
       - <<: *test
       - run:
           name: Build docker image
