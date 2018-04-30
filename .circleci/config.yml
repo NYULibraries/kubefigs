@@ -23,6 +23,7 @@ jobs:
   push:
     <<: *docker-defaults
     steps:
+      - checkout
       - setup_remote_docker
       - run:
           name: Build docker image
@@ -36,6 +37,7 @@ jobs:
   push_latest:
     <<: *docker-defaults
     steps:
+      - checkout
       - setup_remote_docker
       - run:
           name: Tag docker image
