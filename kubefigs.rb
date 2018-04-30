@@ -70,7 +70,7 @@ end
 
 def inject_variables(template, vars_hash)
   vars_hash.inject(template) do |result, (variable, value)|
-    result.gsub("${#{variable}}", value)
+    result.gsub("${#{variable}}", value || "")
   end
 end
 

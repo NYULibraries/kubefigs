@@ -47,7 +47,7 @@ jobs:
           name: Authenticate with dockerhub
           command: docker login -u "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
       - run:
-          name: Push branch-tagged image
+          name: Push latest image
           command: docker push nyulibraries/kubefigs
 
 workflows:
