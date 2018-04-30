@@ -3,28 +3,27 @@ docker-defaults: &docker-defaults
     - image: docker:18.03.0-ce-git
   working_directory: ~/app
 
+dc-setup: &dc-setup
+  - checkout
+  - setup_remote_docker
+  - run:
+      name: Install dependencies
+      command: |
+        apk add --no-cache python3
+        pip3 install docker-compose==1.16.1
+
+test: &test
+  run:
+    name: Test
+    command: docker-compose run test
+
 version: 2
 jobs:
-  test:
+  test_and_push:
     <<: *docker-defaults
     steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --no-cache \
-              py-pip
-            pip install \
-              docker-compose==1.16.1
-      - run:
-          name: Run tests
-          command: docker-compose run test
-  push:
-    <<: *docker-defaults
-    steps:
-      - checkout
-      - setup_remote_docker
+      <<: *dc-setup
+      - <<: *test
       - run:
           name: Build docker image
           command: docker build . -t nyulibraries/kubefigs:${CIRCLE_BRANCH//\//_}
@@ -34,11 +33,11 @@ jobs:
       - run:
           name: Push branch-tagged image
           command: docker push nyulibraries/kubefigs:${CIRCLE_BRANCH//\//_}
-  push_latest:
+  test_and_push_latest:
     <<: *docker-defaults
     steps:
-      - checkout
-      - setup_remote_docker
+      <<: *dc-setup
+      - <<: *test
       - run:
           name: Build docker image
           command: docker build . -t nyulibraries/kubefigs
@@ -46,20 +45,18 @@ jobs:
           name: Authenticate with dockerhub
           command: docker login -u "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
       - run:
-          name: Push latest image
+          name: Push branch-tagged image
           command: docker push nyulibraries/kubefigs
 
 workflows:
   version: 2
   build-test-and-push:
     jobs:
-      - test
-      - push:
-          requires:
-            - test
-      - push_latest:
-          requires:
-            - push
+      - test_and_push:
+          filters:
+            branches:
+              ignore: master
+      - test_and_push_latest:
           filters:
             branches:
               only: master
