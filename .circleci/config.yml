@@ -41,7 +41,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Build docker image
-          command: docker build . -t nyulibraries/kubefigs:master nyulibraries/kubefigs
+          command: docker build . -t nyulibraries/kubefigs
       - run:
           name: Authenticate with dockerhub
           command: docker login -u "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
