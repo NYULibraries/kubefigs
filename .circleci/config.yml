@@ -1,10 +1,12 @@
-# https://circleci.com/blog/how-to-build-a-docker-image-on-circleci-2-0/
+docker-defaults: &docker-defaults
+  docker:
+    - image: docker:18.03.0-ce-git
+  working_directory: ~/app
+
 version: 2
 jobs:
-  build:
-    docker:
-      - image: docker:17.09.0-ce-git
-    working_directory: ~/app
+  test:
+    <<: *docker-defaults
     steps:
       - checkout
       - setup_remote_docker
@@ -17,16 +19,40 @@ jobs:
               docker-compose==1.16.1
       - run:
           name: Run tests
-          command: |
-            docker-compose build
-            docker-compose run test
+          command: docker-compose run test
+  push:
+    <<: *docker-defaults
+    steps:
       - run:
-          name: Deploy docker image
-          command: |
-            docker build . -t nyulibraries/kubefigs:${CIRCLE_BRANCH//\//_}
-            docker login -u "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-            docker push nyulibraries/kubefigs:${CIRCLE_BRANCH//\//_}
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker tag nyulibraries/kubefigs:master nyulibraries/kubefigs
-              docker push nyulibraries/kubefigs
-            fi
+          name: Build docker image
+          command: build . -t nyulibraries/kubefigs:${CIRCLE_BRANCH//\//_}
+      - run:
+          name: Authenticate with dockerhub
+          command: docker login -u "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+      - run:
+          name: Push branch-tagged image
+          command: docker push nyulibraries/kubefigs:${CIRCLE_BRANCH//\//_}
+  push_latest:
+    <<: *docker-defaults
+    steps:
+      - run:
+          name: Tag docker image
+          command: docker tag nyulibraries/kubefigs:master nyulibraries/kubefigs
+      - run:
+          name: Push latest image
+          command: docker push nyulibraries/kubefigs
+
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - test
+      - push:
+          requires:
+            - test
+      - push_latest:
+          requires:
+            - push
+          filters:
+            branches:
+              only: master
