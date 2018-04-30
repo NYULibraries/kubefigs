@@ -40,8 +40,11 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Tag docker image
-          command: docker tag nyulibraries/kubefigs:master nyulibraries/kubefigs
+          name: Build docker image
+          command: docker build . -t nyulibraries/kubefigs:master nyulibraries/kubefigs
+      - run:
+          name: Authenticate with dockerhub
+          command: docker login -u "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
       - run:
           name: Push latest image
           command: docker push nyulibraries/kubefigs
