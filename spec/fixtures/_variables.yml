@@ -1,3 +1,5 @@
+x-shared: &shared
+  unused: true
 cats:
   val1: fluffy
   val2: whiskers

@@ -19,7 +19,7 @@ def get_variables_path
 end
 
 def get_template_paths
-  raise "File or directory '#{source_path}' does not exist" unless File.exist?(get_source_path)
+  raise "File or directory '#{get_source_path}' does not exist" unless File.exist?(get_source_path)
 
   if File.file?(get_source_path)
     [get_source_path]
@@ -79,6 +79,7 @@ def kubefigs(source_path, variables_path=nil, verbose: false)
   set_variables_path(variables_path)
 
   variables.each do |environment, vars_hash|
+    next if environment[0..1] == "x-"
     env_dir = get_environment_dir(directory, environment)
 
     templates.each do |source_path, template|
